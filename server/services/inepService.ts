@@ -17,6 +17,8 @@ export async function extrairEstabelecimentosEducacao(
   onProgress?: (current: number, total: number) => void
 ): Promise<EstabelecimentoEducacao[]> {
   try {
+    console.log(`[INEP] Iniciando extração para município ${codigoMunicipio}`);
+    
     // Simular processamento
     if (onProgress) {
       onProgress(1, 1);
@@ -26,11 +28,12 @@ export async function extrairEstabelecimentosEducacao(
     // Em produção, aqui seria feita a consulta ao banco de dados local
     // com os dados consolidados do INEP filtrados por município
     
-    console.log(`Buscando estabelecimentos de educação para município ${codigoMunicipio}`);
+    console.log(`[INEP] Nota: Serviço retorna dados mockados - implementar importação de dados consolidados`);
     
     // Aguardar um pouco para simular processamento
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    console.log(`[INEP] Extração concluída: 0 estabelecimentos (dados não importados)`);
     return [];
   } catch (error) {
     console.error("Erro ao extrair estabelecimentos de educação:", error);

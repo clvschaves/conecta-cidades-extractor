@@ -34,3 +34,7 @@
 - [x] Testar extração completa com município real
 - [x] Validar estrutura do arquivo XLSX gerado
 - [x] Testar tratamento de erros (município inválido, APIs indisponíveis)
+
+## Melhorias Solicitadas
+- [x] Adicionar logs detalhados no console para acompanhar extração
+- [x] Remover geocodificação obrigatória (aceitar apenas endereço)

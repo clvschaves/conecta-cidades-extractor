@@ -18,12 +18,14 @@ export async function extrairEstabelecimentosAssistencia(
   onProgress?: (current: number, total: number) => void
 ): Promise<EstabelecimentoAssistencia[]> {
   try {
+    console.log(`[SUAS] Iniciando extração para município ${codigoMunicipio}`);
+    
     // Simular processamento
     if (onProgress) {
       onProgress(1, 1);
     }
 
-    console.log(`Buscando estabelecimentos de assistência social para município ${codigoMunicipio}`);
+    console.log(`[SUAS] Nota: Serviço retorna dados mockados - implementar importação de dados consolidados`);
     
     // Aguardar um pouco para simular processamento
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -32,6 +34,7 @@ export async function extrairEstabelecimentosAssistencia(
     // Em produção, aqui seria feita a consulta ao banco de dados local
     // com os dados consolidados do SUAS filtrados por município
     
+    console.log(`[SUAS] Extração concluída: 0 estabelecimentos (dados não importados)`);
     return [];
   } catch (error) {
     console.error("Erro ao extrair estabelecimentos de assistência social:", error);

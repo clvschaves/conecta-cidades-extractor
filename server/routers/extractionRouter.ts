@@ -148,26 +148,27 @@ async function processExtraction(
   }
 
   try {
+    console.log(`\n========================================`);
+    console.log(`[${extractionId}] INICIANDO EXTRAÇÃO - Município: ${municipioCode}`);
+    console.log(`========================================\n`);
+
     // 1. Extrair dados de saúde
-    console.log(`[${extractionId}] Iniciando extração de saúde...`);
+    console.log(`[${extractionId}] ===== FASE 1: SAÚDE =====`);
     const estabelecimentosSaude = await extrairEstabelecimentosSaude(municipioCode);
-    console.log(`[${extractionId}] Saúde: ${estabelecimentosSaude.length} estabelecimentos`);
+    console.log(`[${extractionId}] ✓ Saúde concluída: ${estabelecimentosSaude.length} estabelecimentos\n`);
 
     // 2. Extrair dados de educação
-    console.log(`[${extractionId}] Iniciando extração de educação...`);
+    console.log(`[${extractionId}] ===== FASE 2: EDUCAÇÃO =====`);
     const estabelecimentosEducacao = await extrairEstabelecimentosEducacao(municipioCode);
-    console.log(
-      `[${extractionId}] Educação: ${estabelecimentosEducacao.length} estabelecimentos`
-    );
+    console.log(`[${extractionId}] ✓ Educação concluída: ${estabelecimentosEducacao.length} estabelecimentos\n`);
 
     // 3. Extrair dados de assistência social
-    console.log(`[${extractionId}] Iniciando extração de assistência social...`);
+    console.log(`[${extractionId}] ===== FASE 3: ASSISTÊNCIA SOCIAL =====`);
     const estabelecimentosAssistencia = await extrairEstabelecimentosAssistencia(municipioCode);
-    console.log(
-      `[${extractionId}] Assistência: ${estabelecimentosAssistencia.length} estabelecimentos`
-    );
+    console.log(`[${extractionId}] ✓ Assistência concluída: ${estabelecimentosAssistencia.length} estabelecimentos\n`);
 
     // 4. Mapear para formato final
+    console.log(`[${extractionId}] ===== FASE 4: MAPEAMENTO =====`);
     const estabelecimentosFinais: EstabelecimentoFinal[] = [];
 
     // Mapear saúde
@@ -233,31 +234,15 @@ async function processExtraction(
       });
     }
 
-    // 5. Geocodificar endereços sem coordenadas
-    const enderecosParaGeocodificar = estabelecimentosFinais
-      .filter((est) => !est.latitude || !est.longitude)
-      .map((est) => est.endereco);
+    // 5. Geocodificação removida - aceitar apenas endereço
+    console.log(`[${extractionId}] Geocodificação desabilitada - mantendo apenas endereços`);
 
-    if (enderecosParaGeocodificar.length > 0) {
-      console.log(
-        `[${extractionId}] Geocodificando ${enderecosParaGeocodificar.length} endereços...`
-      );
-      const coordenadas = await geocodificarLote(enderecosParaGeocodificar);
-
-      for (const est of estabelecimentosFinais) {
-        if (!est.latitude || !est.longitude) {
-          const coords = coordenadas.get(est.endereco);
-          if (coords) {
-            est.latitude = coords.latitude.toString();
-            est.longitude = coords.longitude.toString();
-          }
-        }
-      }
-    }
+    console.log(`[${extractionId}] Total de estabelecimentos mapeados: ${estabelecimentosFinais.length}\n`);
 
     // 6. Gerar arquivo XLSX
-    console.log(`[${extractionId}] Gerando arquivo XLSX...`);
+    console.log(`[${extractionId}] ===== FASE 5: GERAÇÃO XLSX =====`);
     const { url, key } = await gerarArquivoXLSX(estabelecimentosFinais, municipioCode);
+    console.log(`[${extractionId}] ✓ Arquivo XLSX gerado com sucesso`);
 
     // 7. Atualizar registro
     await db
@@ -273,7 +258,11 @@ async function processExtraction(
       })
       .where(eq(extractions.id, extractionId));
 
-    console.log(`[${extractionId}] Extração concluída com sucesso!`);
+    console.log(`\n========================================`);
+    console.log(`[${extractionId}] ✓✓✓ EXTRAÇÃO CONCLUÍDA COM SUCESSO ✓✓✓`);
+    console.log(`[${extractionId}] Total: ${estabelecimentosSaude.length} saúde + ${estabelecimentosEducacao.length} educação + ${estabelecimentosAssistencia.length} assistência`);
+    console.log(`[${extractionId}] Arquivo disponível em: ${url}`);
+    console.log(`========================================\n`);
   } catch (error) {
     console.error(`[${extractionId}] Erro na extração:`, error);
 

@@ -1,17 +1,10 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -25,4 +18,24 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Tabela para armazenar histórico de extrações realizadas
+ */
+export const extractions = mysqlTable("extractions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  municipioCode: varchar("municipioCode", { length: 7 }).notNull(),
+  municipioName: varchar("municipioName", { length: 255 }),
+  status: mysqlEnum("status", ["processing", "completed", "failed"]).notNull(),
+  fileUrl: text("fileUrl"),
+  fileKey: text("fileKey"),
+  totalSaude: int("totalSaude").default(0),
+  totalEducacao: int("totalEducacao").default(0),
+  totalAssistencia: int("totalAssistencia").default(0),
+  errorMessage: text("errorMessage"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
+export type Extraction = typeof extractions.$inferSelect;
+export type InsertExtraction = typeof extractions.$inferInsert;

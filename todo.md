@@ -47,3 +47,17 @@
 - [x] Reimplementar serviço CNES baseado no código do Colab
 - [x] Adicionar logs detalhados mostrando cada estabelecimento processado
 - [x] Implementar tratamento de erros e retry
+
+## Implementação Educação e Assistência
+- [x] Criar tabelas no banco para dados de Educação (INEP) - Não necessário (leitura direta)
+- [x] Criar tabelas no banco para dados de Assistência Social (SUAS) - Não necessário (leitura direta)
+- [x] Implementar script de importação de dados da planilha de Educação - Download dinâmico
+- [x] Implementar script de importação de dados da planilha de Assistência - Download dinâmico
+- [x] Atualizar serviço INEP para consultar planilha consolidada
+- [x] Atualizar serviço SUAS para mapear código IBGE para nome município
+
+## Tabela de Municípios
+- [x] Criar tabela de municípios no schema
+- [x] Buscar dados de municípios da API do IBGE
+- [x] Popular tabela com dados (5571 municípios)
+- [x] Atualizar serviço SUAS para usar tabela de municípios

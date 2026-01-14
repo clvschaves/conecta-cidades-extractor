@@ -15,6 +15,13 @@
       "when": 1768346939292,
       "tag": "0001_abnormal_salo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1768354601206,
+      "tag": "0002_mute_hobgoblin",
+      "breakpoints": true
     }
   ]
 }

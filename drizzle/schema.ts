@@ -13,13 +13,25 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
-});
-
-export type User = typeof users.$inferSelect;
+});export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Tabela para armazenar histórico de extrações realizadas
+ * Tabela de municípios brasileiros para mapeamento de código IBGE
+ */
+export const municipios = mysqlTable("municipios", {
+  id: int("id").autoincrement().primaryKey(),
+  codigoIbge: varchar("codigoIbge", { length: 7 }).notNull().unique(),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  uf: varchar("uf", { length: 2 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Municipio = typeof municipios.$inferSelect;
+export type InsertMunicipio = typeof municipios.$inferInsert;
+
+/**
+ * Tabela para histórico de extrações realizadas
  */
 export const extractions = mysqlTable("extractions", {
   id: int("id").autoincrement().primaryKey(),

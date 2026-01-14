@@ -339,11 +339,14 @@ export default function Home() {
           </Card>
         </div>
 
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>
-            Sistema automatizado de coleta de dados de equipamentos públicos municipais
-          </p>
-          <p className="mt-1">Fontes: CNES (Saúde), INEP (Educação), SUAS (Assistência Social)</p>
+        <div className="mt-8 text-center text-sm text-gray-500">
+          Sistema automatizado de coleta de dados de equipamentos públicos municipais
+          <br />
+          Fontes: CNES (Saúde), INEP (Educação), SUAS (Assistência Social)
+          <br />
+          <a href="/admin" className="text-blue-600 hover:underline mt-2 inline-block">
+            ⚙️ Administração (Importar Planilhas)
+          </a>
         </div>
       </div>
     </div>

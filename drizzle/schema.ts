@@ -31,6 +31,38 @@ export type Municipio = typeof municipios.$inferSelect;
 export type InsertMunicipio = typeof municipios.$inferInsert;
 
 /**
+ * Tabela de escolas (INEP)
+ */
+export const escolas = mysqlTable("escolas", {
+  id: int("id").autoincrement().primaryKey(),
+  codigoInep: varchar("codigoInep", { length: 20 }).notNull().unique(),
+  nome: varchar("nome", { length: 500 }).notNull(),
+  codigoMunicipio: varchar("codigoMunicipio", { length: 7 }).notNull(),
+  municipio: varchar("municipio", { length: 255 }).notNull(),
+  uf: varchar("uf", { length: 2 }).notNull(),
+  restricaoAtendimento: text("restricaoAtendimento"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Escola = typeof escolas.$inferSelect;
+export type InsertEscola = typeof escolas.$inferInsert;
+
+/**
+ * Tabela de equipamentos de assistência social (SUAS)
+ */
+export const equipamentosAssistencia = mysqlTable("equipamentosAssistencia", {
+  id: int("id").autoincrement().primaryKey(),
+  tipo: varchar("tipo", { length: 50 }).notNull(), // CRAS ou CREAS
+  nome: varchar("nome", { length: 500 }).notNull(),
+  municipio: varchar("municipio", { length: 255 }).notNull(),
+  endereco: text("endereco"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EquipamentoAssistencia = typeof equipamentosAssistencia.$inferSelect;
+export type InsertEquipamentoAssistencia = typeof equipamentosAssistencia.$inferInsert;
+
+/**
  * Tabela para histórico de extrações realizadas
  */
 export const extractions = mysqlTable("extractions", {

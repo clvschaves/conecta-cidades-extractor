@@ -61,3 +61,10 @@
 - [x] Buscar dados de municípios da API do IBGE
 - [x] Popular tabela com dados (5571 municípios)
 - [x] Atualizar serviço SUAS para usar tabela de municípios
+
+## Bug Crítico - Solução
+- [x] Criar tabela para armazenar dados de educação no banco
+- [x] Criar interface de upload de planilha XLSX
+- [x] Implementar importação de dados da planilha para o banco
+- [x] Atualizar serviço INEP para consultar banco ao invés de baixar planilha
+- [x] Fazer o mesmo para planilha de Assistência Social

@@ -154,7 +154,12 @@ async function processExtraction(
 
     // 1. Extrair dados de saúde
     console.log(`[${extractionId}] ===== FASE 1: SAÚDE =====`);
-    const estabelecimentosSaude = await extrairEstabelecimentosSaude(municipioCode);
+    const estabelecimentosSaude = await extrairEstabelecimentosSaude(
+      municipioCode,
+      (current, total, message) => {
+        console.log(`[${extractionId}] CNES: ${message} (${current}/${total})`);
+      }
+    );
     console.log(`[${extractionId}] ✓ Saúde concluída: ${estabelecimentosSaude.length} estabelecimentos\n`);
 
     // 2. Extrair dados de educação

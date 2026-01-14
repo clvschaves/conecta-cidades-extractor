@@ -56,21 +56,26 @@ function mapearHorario(horarios: any[]): {
 
 export async function extrairEstabelecimentosSaude(
   codigoMunicipio: string,
-  onProgress?: (current: number, total: number) => void
+  onProgress?: (current: number, total: number, message: string) => void
 ): Promise<EstabelecimentoSaude[]> {
   try {
-    console.log(`[CNES] Iniciando extração para município ${codigoMunicipio}`);
+    console.log(`\n[CNES] ========================================`);
+    console.log(`[CNES] INICIANDO EXTRAÇÃO - Município: ${codigoMunicipio}`);
+    console.log(`[CNES] ========================================\n`);
+
     // 1. Buscar lista de estabelecimentos
     const listaUrl = `${CNES_BASE_URL}?municipio=${codigoMunicipio}`;
-    console.log(`[CNES] Buscando lista de estabelecimentos: ${listaUrl}`);
+    console.log(`[CNES] Buscando lista de estabelecimentos...`);
+    
     const listaResponse = await axios.get(listaUrl, { headers, timeout: 30000 });
     const listaBasica = listaResponse.data;
-    console.log(`[CNES] Recebidos ${listaBasica?.length || 0} estabelecimentos da API`);
 
     if (!Array.isArray(listaBasica) || listaBasica.length === 0) {
-      console.log(`[CNES] Nenhum estabelecimento encontrado`);
+      console.log(`[CNES] ❌ Nenhum estabelecimento encontrado`);
       return [];
     }
+
+    console.log(`[CNES] 📋 Lista base carregada: ${listaBasica.length} estabelecimentos`);
 
     // Filtrar apenas estabelecimentos municipais
     const estabelecimentosFiltrados = listaBasica.filter((item: any) => {
@@ -80,17 +85,26 @@ export async function extrairEstabelecimentosSaude(
     });
 
     const total = estabelecimentosFiltrados.length;
-    console.log(`[CNES] Após filtros: ${total} estabelecimentos municipais`);
+    console.log(`[CNES] 🔍 Após filtros (gestão municipal): ${total} estabelecimentos`);
+    console.log(`[CNES] 🚀 Iniciando extração detalhada...\n`);
+
     const estabelecimentos: EstabelecimentoSaude[] = [];
+    let sucessos = 0;
+    let falhas = 0;
 
     // 2. Buscar detalhes de cada estabelecimento
     for (let i = 0; i < estabelecimentosFiltrados.length; i++) {
       const item = estabelecimentosFiltrados[i];
       const idCnes = item.id;
       const cnesCode = item.cnes;
+      const nomeLog = formatarTexto(item.noFantasia || "Desconhecido");
+
+      // Log de progresso
+      const progressMsg = `[${i + 1}/${total}] ${cnesCode} - ${nomeLog.substring(0, 35).padEnd(35)}`;
+      process.stdout.write(`[CNES] ${progressMsg} ... `);
 
       if (onProgress) {
-        onProgress(i + 1, total);
+        onProgress(i + 1, total, `Processando: ${nomeLog}`);
       }
 
       try {
@@ -106,7 +120,7 @@ export async function extrairEstabelecimentosSaude(
           const horariosResponse = await axios.get(horariosUrl, { headers, timeout: 5000 });
           horarios = horariosResponse.data || [];
         } catch (err) {
-          // Ignorar erro de horários
+          // Ignorar erro de horários - não é crítico
         }
 
         const horariosMap = mapearHorario(horarios);
@@ -119,7 +133,7 @@ export async function extrairEstabelecimentosSaude(
         const complementoStr = complemento ? `, ${complemento}` : "";
         const endereco = `${logradouro}, ${numero}${complementoStr} - ${bairro}`;
 
-        const estabelecimento = {
+        const estabelecimento: EstabelecimentoSaude = {
           cnes: cnesCode,
           nome: formatarTexto(detalhes.noFantasia),
           tipo: formatarTexto(detalhes.dsTpUnidade),
@@ -133,21 +147,30 @@ export async function extrairEstabelecimentosSaude(
           horarioSexta: horariosMap.sexta,
           horarioSabado: horariosMap.sabado,
         };
+
         estabelecimentos.push(estabelecimento);
-        console.log(`[CNES] ${i + 1}/${total} - ${estabelecimento.nome}`);
+        sucessos++;
+        console.log(`✅ OK`);
 
         // Pequeno delay para não sobrecarregar a API
         await new Promise((resolve) => setTimeout(resolve, 100));
       } catch (err) {
+        falhas++;
+        console.log(`❌ Falha`);
         console.error(`[CNES] Erro ao buscar detalhes do estabelecimento ${cnesCode}:`, err);
         // Continuar com próximo
       }
     }
 
-    console.log(`[CNES] Extração concluída: ${estabelecimentos.length} estabelecimentos processados`);
+    console.log(`\n[CNES] ========================================`);
+    console.log(`[CNES] ✅ EXTRAÇÃO CONCLUÍDA`);
+    console.log(`[CNES] Total processado: ${estabelecimentos.length} estabelecimentos`);
+    console.log(`[CNES] Sucessos: ${sucessos} | Falhas: ${falhas}`);
+    console.log(`[CNES] ========================================\n`);
+
     return estabelecimentos;
   } catch (error) {
-    console.error("Erro ao extrair estabelecimentos de saúde:", error);
+    console.error("[CNES] ❌ Erro crítico na extração:", error);
     throw new Error("Falha ao extrair dados de saúde do CNES");
   }
 }

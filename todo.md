@@ -42,3 +42,8 @@
 ## Nova Melhoria
 - [x] Adicionar logs visíveis no console do navegador (frontend)
 - [x] Criar painel visual de logs na interface
+
+## Correção Urgente
+- [x] Reimplementar serviço CNES baseado no código do Colab
+- [x] Adicionar logs detalhados mostrando cada estabelecimento processado
+- [x] Implementar tratamento de erros e retry

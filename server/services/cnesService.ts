@@ -63,8 +63,16 @@ export async function extrairEstabelecimentosSaude(
     console.log(`[CNES] INICIANDO EXTRAÇÃO - Município: ${codigoMunicipio}`);
     console.log(`[CNES] ========================================\n`);
 
+    // Normalizar código: API CNES aceita apenas 6 dígitos (sem dígito verificador)
+    const codigoNormalizado = codigoMunicipio.length === 7 
+      ? codigoMunicipio.substring(0, 6) 
+      : codigoMunicipio;
+    
+    console.log(`[CNES] Código original: ${codigoMunicipio}`);
+    console.log(`[CNES] Código normalizado para API: ${codigoNormalizado}`);
+
     // 1. Buscar lista de estabelecimentos
-    const listaUrl = `${CNES_BASE_URL}?municipio=${codigoMunicipio}`;
+    const listaUrl = `${CNES_BASE_URL}?municipio=${codigoNormalizado}`;
     console.log(`[CNES] Buscando lista de estabelecimentos...`);
     
     const listaResponse = await axios.get(listaUrl, { headers, timeout: 15000 });

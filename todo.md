@@ -75,3 +75,9 @@
 - [x] Adicionar logs mais frequentes para o frontend durante extração CNES
 - [x] Reduzir timeout e melhorar tratamento de erro (15s lista, 10s detalhes, 50ms delay)
 - [ ] Testar com município menor
+
+## Bug Crítico - API CNES
+- [x] Testar acesso direto à API CNES
+- [x] Verificar se API está bloqueando requisições do servidor
+- [x] Descoberto: API aceita apenas 6 dígitos (sem dígito verificador)
+- [x] Corrigir serviço CNES para usar apenas 6 primeiros dígitos

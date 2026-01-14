@@ -67,7 +67,7 @@ export async function extrairEstabelecimentosSaude(
     const listaUrl = `${CNES_BASE_URL}?municipio=${codigoMunicipio}`;
     console.log(`[CNES] Buscando lista de estabelecimentos...`);
     
-    const listaResponse = await axios.get(listaUrl, { headers, timeout: 30000 });
+    const listaResponse = await axios.get(listaUrl, { headers, timeout: 15000 });
     const listaBasica = listaResponse.data;
 
     if (!Array.isArray(listaBasica) || listaBasica.length === 0) {
@@ -103,14 +103,15 @@ export async function extrairEstabelecimentosSaude(
       const progressMsg = `[${i + 1}/${total}] ${cnesCode} - ${nomeLog.substring(0, 35).padEnd(35)}`;
       process.stdout.write(`[CNES] ${progressMsg} ... `);
 
+      // Enviar progresso para frontend a cada estabelecimento
       if (onProgress) {
-        onProgress(i + 1, total, `Processando: ${nomeLog}`);
+        onProgress(i + 1, total, `[${i + 1}/${total}] ${nomeLog.substring(0, 40)}`);
       }
 
       try {
         // Buscar detalhes
         const detalhesUrl = `${CNES_BASE_URL}/${idCnes}`;
-        const detalhesResponse = await axios.get(detalhesUrl, { headers, timeout: 20000 });
+        const detalhesResponse = await axios.get(detalhesUrl, { headers, timeout: 10000 });
         const detalhes = detalhesResponse.data;
 
         // Buscar horários
@@ -153,7 +154,7 @@ export async function extrairEstabelecimentosSaude(
         console.log(`✅ OK`);
 
         // Pequeno delay para não sobrecarregar a API
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 50));
       } catch (err) {
         falhas++;
         console.log(`❌ Falha`);

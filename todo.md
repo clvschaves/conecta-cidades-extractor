@@ -68,3 +68,10 @@
 - [x] Implementar importação de dados da planilha para o banco
 - [x] Atualizar serviço INEP para consultar banco ao invés de baixar planilha
 - [x] Fazer o mesmo para planilha de Assistência Social
+
+## Bug Urgente
+- [x] Investigar por que extração retorna 0 registros em todas as categorias
+- [x] Verificar logs do servidor para identificar erro na extração CNES
+- [x] Adicionar logs mais frequentes para o frontend durante extração CNES
+- [x] Reduzir timeout e melhorar tratamento de erro (15s lista, 10s detalhes, 50ms delay)
+- [ ] Testar com município menor

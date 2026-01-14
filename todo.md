@@ -38,3 +38,7 @@
 ## Melhorias Solicitadas
 - [x] Adicionar logs detalhados no console para acompanhar extração
 - [x] Remover geocodificação obrigatória (aceitar apenas endereço)
+
+## Nova Melhoria
+- [x] Adicionar logs visíveis no console do navegador (frontend)
+- [x] Criar painel visual de logs na interface

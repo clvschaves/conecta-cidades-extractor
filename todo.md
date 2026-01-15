@@ -81,3 +81,8 @@
 - [x] Verificar se API está bloqueando requisições do servidor
 - [x] Descoberto: API aceita apenas 6 dígitos (sem dígito verificador)
 - [x] Corrigir serviço CNES para usar apenas 6 primeiros dígitos
+
+## Melhoria de Logs
+- [x] Adicionar logs detalhados de cada requisição HTTP
+- [x] Mostrar tentativas e erros específicos
+- [x] Enviar logs para frontend em tempo real

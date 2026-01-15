@@ -108,12 +108,20 @@ export const importRouter = router({
         const batch = data.slice(i, i + batchSize);
         
         const values = batch
-          .filter((row) => row["Município"] && row["Nome"])
+          .filter((row) => row["Município"] && row["Nome"] && row["IBGE"] && row["UF"])
           .map((row) => ({
+            codigoMunicipio: String(row["IBGE"]).substring(0, 6),
+            municipio: String(row["Município"]),
+            uf: String(row["UF"]),
             tipo: String(row["Tipo"] || "CRAS"),
             nome: String(row["Nome"]),
-            municipio: String(row["Município"]),
             endereco: row["Endereço Tratado"] ? String(row["Endereço Tratado"]) : null,
+            latitude: row["latitude"] ? String(row["latitude"]) : null,
+            longitude: row["longitude"] ? String(row["longitude"]) : null,
+            telefone: row["Telefone"] ? String(row["Telefone"]) : null,
+            email: row["E-mail"] ? String(row["E-mail"]) : null,
+            cep: row["CEP"] ? String(row["CEP"]) : null,
+            bairro: row["Bairro da Cruz"] ? String(row["Bairro da Cruz"]) : null,
           }));
 
         if (values.length > 0) {

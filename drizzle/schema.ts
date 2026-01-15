@@ -60,10 +60,18 @@ export type InsertEscola = typeof escolas.$inferInsert;
  */
 export const equipamentosAssistencia = mysqlTable("equipamentosAssistencia", {
   id: int("id").autoincrement().primaryKey(),
-  tipo: varchar("tipo", { length: 50 }).notNull(), // CRAS ou CREAS
-  nome: varchar("nome", { length: 500 }).notNull(),
+  codigoMunicipio: varchar("codigoMunicipio", { length: 10 }).notNull(),
   municipio: varchar("municipio", { length: 255 }).notNull(),
+  uf: varchar("uf", { length: 2 }).notNull(),
+  tipo: varchar("tipo", { length: 100 }).notNull(), // CRAS, CREAS, Unidade de Acolhimento, Centro Pop
+  nome: text("nome").notNull(),
   endereco: text("endereco"),
+  latitude: decimal("latitude", { precision: 20, scale: 15 }),
+  longitude: decimal("longitude", { precision: 20, scale: 15 }),
+  telefone: varchar("telefone", { length: 50 }),
+  email: varchar("email", { length: 255 }),
+  cep: varchar("cep", { length: 10 }),
+  bairro: varchar("bairro", { length: 255 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

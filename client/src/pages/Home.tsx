@@ -151,22 +151,37 @@ export default function Home() {
   };
 
   const getProgress = () => {
-    switch (phase) {
-      case "saude":
-        return 20;
-      case "educacao":
-        return 40;
-      case "assistencia":
-        return 60;
-      case "geocoding":
-        return 80;
-      case "generating":
-        return 90;
-      case "completed":
-        return 100;
-      default:
-        return 0;
+    if (!extractionStatus) return 0;
+    
+    // Calcular progresso baseado em dados reais
+    let progress = 0;
+    
+    // Fase de Saúde (0-40%)
+    if (phase === "saude" || extractionStatus.totalSaude !== null) {
+      progress = 40;
     }
+    
+    // Fase de Educação (40-70%)
+    if (phase === "educacao" || extractionStatus.totalEducacao !== null) {
+      progress = 70;
+    }
+    
+    // Fase de Assistência (70-90%)
+    if (phase === "assistencia" || extractionStatus.totalAssistencia !== null) {
+      progress = 90;
+    }
+    
+    // Fase de Geração (90-95%)
+    if (phase === "generating") {
+      progress = 95;
+    }
+    
+    // Concluído (100%)
+    if (phase === "completed") {
+      progress = 100;
+    }
+    
+    return progress;
   };
 
   const isProcessing = phase !== "idle" && phase !== "completed" && phase !== "error";

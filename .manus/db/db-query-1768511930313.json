@@ -1,0 +1,9 @@
+{
+  "query": "\nALTER TABLE equipamentosAssistencia \nADD COLUMN codigoMunicipio VARCHAR(10) NOT NULL DEFAULT '',\nADD COLUMN uf VARCHAR(2) NOT NULL DEFAULT '',\nADD COLUMN latitude DECIMAL(20,15),\nADD COLUMN longitude DECIMAL(20,15),\nADD COLUMN telefone VARCHAR(50),\nADD COLUMN email VARCHAR(255),\nADD COLUMN cep VARCHAR(10),\nADD COLUMN bairro VARCHAR(255);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2nimhsgjbT5dVUi.root --database N8wDKpai5rwfEcEAdoaABQ --execute \nALTER TABLE equipamentosAssistencia \nADD COLUMN codigoMunicipio VARCHAR(10) NOT NULL DEFAULT '',\nADD COLUMN uf VARCHAR(2) NOT NULL DEFAULT '',\nADD COLUMN latitude DECIMAL(20,15),\nADD COLUMN longitude DECIMAL(20,15),\nADD COLUMN telefone VARCHAR(50),\nADD COLUMN email VARCHAR(255),\nADD COLUMN cep VARCHAR(10),\nADD COLUMN bairro VARCHAR(255);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3598
+}

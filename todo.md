@@ -108,3 +108,16 @@
 - [x] Corrigir script de população de municípios para usar 6 dígitos
 - [x] Reexecutar script de população (5571 municípios)
 - [ ] Testar extração completa com saúde + educação
+
+## Importação de Dados de Assistência Social
+- [x] Analisar estrutura da planilha ConsolidadoPlanilhas.xlsx (abas: 2024, Unidade de Acolhimento, Centros Pop)
+- [x] Criar/atualizar tabela no banco para dados de assistência
+- [x] Criar script de importação para todas as abas
+- [x] Executar importação dos dados (12.574 equipamentos Base 2024)
+- [x] Atualizar serviço SUAS para consultar banco de dados
+
+## Melhoria de Indicador de Progresso
+- [x] Implementar barra de progresso que reflete tempo real do processo
+- [x] Adicionar porcentagem baseada em etapas concluídas (40% saúde, 70% educação, 90% assistência, 100% completo)
+- [ ] Mostrar estimativa de tempo restante
+- [x] Atualizar progresso durante cada fase (saúde, educação, assistência)

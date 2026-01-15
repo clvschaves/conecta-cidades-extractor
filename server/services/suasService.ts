@@ -78,6 +78,8 @@ export async function extrairEstabelecimentosAssistencia(
         tipo: equip.tipo as "CRAS" | "CREAS",
         nome: equip.nome,
         endereco: equip.endereco || `${municipio.nome}/${municipio.uf}`,
+        latitude: equip.latitude ? parseFloat(equip.latitude) : undefined,
+        longitude: equip.longitude ? parseFloat(equip.longitude) : undefined,
       });
 
       if (onProgress && (i + 1) % 5 === 0) {

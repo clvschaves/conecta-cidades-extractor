@@ -94,3 +94,9 @@
 - [x] Criar endpoint SSE no servidor
 - [x] Conectar frontend ao SSE para receber logs
 - [x] Armazenar logs em memória durante processamento
+
+## Importação de Dados de Educação
+- [x] Analisar estrutura da planilha de educação fornecida
+- [x] Criar script de importação para popular tabela de educação
+- [x] Executar importação dos dados (212.386 registros)
+- [ ] Testar extração com dados reais de educação

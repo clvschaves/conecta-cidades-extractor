@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, json } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -37,10 +37,18 @@ export const escolas = mysqlTable("escolas", {
   id: int("id").autoincrement().primaryKey(),
   codigoInep: varchar("codigoInep", { length: 20 }).notNull().unique(),
   nome: varchar("nome", { length: 500 }).notNull(),
-  codigoMunicipio: varchar("codigoMunicipio", { length: 7 }).notNull(),
   municipio: varchar("municipio", { length: 255 }).notNull(),
   uf: varchar("uf", { length: 2 }).notNull(),
+  endereco: text("endereco"),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
   restricaoAtendimento: text("restricaoAtendimento"),
+  localizacao: varchar("localizacao", { length: 100 }),
+  categoriaAdministrativa: varchar("categoriaAdministrativa", { length: 100 }),
+  telefone: varchar("telefone", { length: 50 }),
+  dependenciaAdministrativa: varchar("dependenciaAdministrativa", { length: 100 }),
+  porteEscola: varchar("porteEscola", { length: 100 }),
+  etapasModalidade: text("etapasModalidade"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 

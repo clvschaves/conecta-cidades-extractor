@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE escolas \nDROP COLUMN IF EXISTS codigoMunicipio,\nADD COLUMN IF NOT EXISTS endereco TEXT,\nADD COLUMN IF NOT EXISTS latitude DECIMAL(10,8),\nADD COLUMN IF NOT EXISTS longitude DECIMAL(11,8),\nADD COLUMN IF NOT EXISTS localizacao VARCHAR(100),\nADD COLUMN IF NOT EXISTS categoriaAdministrativa VARCHAR(100),\nADD COLUMN IF NOT EXISTS telefone VARCHAR(50),\nADD COLUMN IF NOT EXISTS dependenciaAdministrativa VARCHAR(100),\nADD COLUMN IF NOT EXISTS porteEscola VARCHAR(100),\nADD COLUMN IF NOT EXISTS etapasModalidade TEXT;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2nimhsgjbT5dVUi.root --database N8wDKpai5rwfEcEAdoaABQ --execute ALTER TABLE escolas \nDROP COLUMN IF EXISTS codigoMunicipio,\nADD COLUMN IF NOT EXISTS endereco TEXT,\nADD COLUMN IF NOT EXISTS latitude DECIMAL(10,8),\nADD COLUMN IF NOT EXISTS longitude DECIMAL(11,8),\nADD COLUMN IF NOT EXISTS localizacao VARCHAR(100),\nADD COLUMN IF NOT EXISTS categoriaAdministrativa VARCHAR(100),\nADD COLUMN IF NOT EXISTS telefone VARCHAR(50),\nADD COLUMN IF NOT EXISTS dependenciaAdministrativa VARCHAR(100),\nADD COLUMN IF NOT EXISTS porteEscola VARCHAR(100),\nADD COLUMN IF NOT EXISTS etapasModalidade TEXT;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2996
+}

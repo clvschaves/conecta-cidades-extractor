@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "../db";
-import { escolas } from "../../drizzle/schema";
+import { escolas, municipios } from "../../drizzle/schema";
 import { EstabelecimentoEducacao } from "../../shared/estabelecimentos";
 
 export async function extrairEstabelecimentosEducacao(
@@ -17,19 +17,39 @@ export async function extrairEstabelecimentosEducacao(
       throw new Error("Banco de dados não disponível");
     }
 
+    // Normalizar código para 6 dígitos
+    const codigoNormalizado = codigoMunicipio.substring(0, 6);
+
+    // Buscar nome do município
+    console.log(`[INEP] Buscando nome do município pelo código ${codigoNormalizado}...`);
+    const municipioResult = await db
+      .select()
+      .from(municipios)
+      .where(eq(municipios.codigoIbge, codigoNormalizado))
+      .limit(1);
+
+    if (municipioResult.length === 0) {
+      console.log(`[INEP] ⚠️  Município não encontrado na tabela de municípios`);
+      return [];
+    }
+
+    const municipioNome = municipioResult[0].nome;
+    console.log(`[INEP] Município encontrado: ${municipioNome}/${municipioResult[0].uf}`);
+
     console.log(`[INEP] Consultando escolas no banco de dados...`);
 
     // Buscar escolas do município
     const escolasResult = await db
       .select()
       .from(escolas)
-      .where(eq(escolas.codigoMunicipio, codigoMunicipio));
+      .where(eq(escolas.municipio, municipioNome));
 
     console.log(`[INEP] Total de escolas encontradas: ${escolasResult.length}`);
 
     if (escolasResult.length === 0) {
-      console.log(`[INEP] ⚠️  Nenhuma escola encontrada para o município ${codigoMunicipio}`);
-      console.log(`[INEP] Certifique-se de importar a planilha de educação na página de administração`);
+      console.log(`[INEP] ⚠️  Nenhuma escola encontrada para ${municipioNome}`);
+      console.log(`[INEP] Certifique-se de importar a planilha de educação`);
+      return [];
     }
 
     const estabelecimentos: EstabelecimentoEducacao[] = [];
@@ -45,7 +65,9 @@ export async function extrairEstabelecimentosEducacao(
         codigoInep: escola.codigoInep,
         nome: escola.nome,
         tipo: "ESCOLA",
-        endereco: `${escola.municipio}/${escola.uf}`,
+        endereco: escola.endereco || `${escola.municipio}/${escola.uf}`,
+        latitude: escola.latitude ? parseFloat(escola.latitude) : undefined,
+        longitude: escola.longitude ? parseFloat(escola.longitude) : undefined,
       });
 
       if (onProgress && (i + 1) % 10 === 0) {

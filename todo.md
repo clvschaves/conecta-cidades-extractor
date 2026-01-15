@@ -100,3 +100,11 @@
 - [x] Criar script de importação para popular tabela de educação
 - [x] Executar importação dos dados (212.386 registros)
 - [ ] Testar extração com dados reais de educação
+
+## Bug - Educação Não Extraída
+- [x] Verificar logs do servidor da última extração
+- [x] Identificar por que dados de educação não foram gerados
+- [x] Problema: códigos IBGE na tabela municipios estão com 7 dígitos, mas serviço normaliza para 6
+- [x] Corrigir script de população de municípios para usar 6 dígitos
+- [x] Reexecutar script de população (5571 municípios)
+- [ ] Testar extração completa com saúde + educação

@@ -1,0 +1,45 @@
+{
+  "query": "SELECT codigoInep, nome, municipio, uf, endereco FROM escolas LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2nimhsgjbT5dVUi.root --database N8wDKpai5rwfEcEAdoaABQ --execute SELECT codigoInep, nome, municipio, uf, endereco FROM escolas LIMIT 5;",
+  "rows": [
+    {
+      "codigoInep": "11000023",
+      "nome": "EEEE ABNAEL MACHADO DE LIMA - CENE",
+      "municipio": "Porto Velho",
+      "uf": "RO",
+      "endereco": "AVENIDA AMAZONAS, 6492 ZONA LESTE. TIRADENTES. 76824-556 Porto Velho - RO."
+    },
+    {
+      "codigoInep": "11000040",
+      "nome": "EMEIEF PEQUENOS TALENTOS",
+      "municipio": "Porto Velho",
+      "uf": "RO",
+      "endereco": "RUA CAETANO, 3256 PREDIO. CALADINHO. 76808-108 Porto Velho - RO."
+    },
+    {
+      "codigoInep": "11000058",
+      "nome": "CENTRO DE ENSINO CLASSE A",
+      "municipio": "Porto Velho",
+      "uf": "RO",
+      "endereco": "AVENIDA CARLOS GOMES, 1135 CENTRO. 76801-123 Porto Velho - RO."
+    },
+    {
+      "codigoInep": "11000082",
+      "nome": "CENTRO EDUCACIONAL PRESBITERIANO 15 DE NOVEMBRO",
+      "municipio": "Porto Velho",
+      "uf": "RO",
+      "endereco": "RUA ALMIRANTE BARROSO, 1483 SANTA BARBARA. 76804-214 Porto Velho - RO."
+    },
+    {
+      "codigoInep": "11000104",
+      "nome": "CENTRO EDUC CORA CORALINA",
+      "municipio": "Porto Velho",
+      "uf": "RO",
+      "endereco": "RUA MEXICO, 1056 NOVA PORTO VELHO. 76820-190 Porto Velho - RO."
+    }
+  ],
+  "messages": [],
+  "stdout": "codigoInep\tnome\tmunicipio\tuf\tendereco\n11000023\tEEEE ABNAEL MACHADO DE LIMA - CENE\tPorto Velho\tRO\tAVENIDA AMAZONAS, 6492 ZONA LESTE. TIRADENTES. 76824-556 Porto Velho - RO.\n11000040\tEMEIEF PEQUENOS TALENTOS\tPorto Velho\tRO\tRUA CAETANO, 3256 PREDIO. CALADINHO. 76808-108 Porto Velho - RO.\n11000058\tCENTRO DE ENSINO CLASSE A\tPorto Velho\tRO\tAVENIDA CARLOS GOMES, 1135 CENTRO. 76801-123 Porto Velho - RO.\n11000082\tCENTRO EDUCACIONAL PRESBITERIANO 15 DE NOVEMBRO\tPorto Velho\tRO\tRUA ALMIRANTE BARROSO, 1483 SANTA BARBARA. 76804-214 Porto Velho - RO.\n11000104\tCENTRO EDUC CORA CORALINA\tPorto Velho\tRO\tRUA MEXICO, 1056 NOVA PORTO VELHO. 76820-190 Porto Velho - RO.\n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

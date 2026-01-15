@@ -1,0 +1,55 @@
+{
+  "query": "SELECT codigoIbge, nome, uf FROM municipios WHERE nome LIKE '%Arapiraca%' OR codigoIbge LIKE '2700%' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2nimhsgjbT5dVUi.root --database N8wDKpai5rwfEcEAdoaABQ --execute SELECT codigoIbge, nome, uf FROM municipios WHERE nome LIKE '%Arapiraca%' OR codigoIbge LIKE '2700%' LIMIT 10;",
+  "rows": [
+    {
+      "codigoIbge": "2700102",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700201",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700300",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700409",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700508",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700607",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700706",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700805",
+      "nome": "Meruoca",
+      "uf": "AL"
+    },
+    {
+      "codigoIbge": "2700904",
+      "nome": "Meruoca",
+      "uf": "AL"
+    }
+  ],
+  "messages": [],
+  "stdout": "codigoIbge\tnome\tuf\n2700102\tMeruoca\tAL\n2700201\tMeruoca\tAL\n2700300\tMeruoca\tAL\n2700409\tMeruoca\tAL\n2700508\tMeruoca\tAL\n2700607\tMeruoca\tAL\n2700706\tMeruoca\tAL\n2700805\tMeruoca\tAL\n2700904\tMeruoca\tAL\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

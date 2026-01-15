@@ -36,7 +36,7 @@ async function main() {
       const values = batch
         .filter((m) => m.microrregiao?.mesorregiao?.UF?.sigla) // Filtrar dados incompletos
         .map((m) => ({
-          codigoIbge: String(m.id),
+          codigoIbge: String(m.id).substring(0, 6), // Usar apenas 6 dígitos
           nome: m.nome,
           uf: m.microrregiao.mesorregiao.UF.sigla,
         }));

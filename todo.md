@@ -86,3 +86,11 @@
 - [x] Adicionar logs detalhados de cada requisição HTTP
 - [x] Mostrar tentativas e erros específicos
 - [x] Enviar logs para frontend em tempo real
+
+## Bug Crítico - Extração Travada
+- [x] Verificar logs do servidor durante extração
+- [x] Identificar por que extração fica travada - logs só no servidor
+- [x] Implementar Server-Sent Events (SSE) para transmitir logs em tempo real
+- [x] Criar endpoint SSE no servidor
+- [x] Conectar frontend ao SSE para receber logs
+- [x] Armazenar logs em memória durante processamento

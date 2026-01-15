@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import uploadRouter from "../routes/upload";
+import { sseLogsHandler } from "../routes/sse";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -38,6 +39,8 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Upload route
   app.use("/api", uploadRouter);
+  // SSE route for real-time logs
+  app.get("/api/extraction/:extractionId/logs", sseLogsHandler);
   // tRPC API
   app.use(
     "/api/trpc",

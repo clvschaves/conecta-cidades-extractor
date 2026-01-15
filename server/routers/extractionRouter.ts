@@ -15,6 +15,7 @@ import { EstabelecimentoFinal } from "../../shared/estabelecimentos";
 import { getDb } from "../db";
 import { extractions } from "../../drizzle/schema";
 import { eq, desc } from "drizzle-orm";
+import { addLog, markCompleted } from "../services/logManager";
 
 export const extractionRouter = router({
   /**
@@ -148,32 +149,30 @@ async function processExtraction(
   }
 
   try {
-    console.log(`\n========================================`);
-    console.log(`[${extractionId}] INICIANDO EXTRAÇÃO - Município: ${municipioCode}`);
-    console.log(`========================================\n`);
+    addLog(extractionId, `Iniciando extração para município ${municipioCode}`, "info");
 
     // 1. Extrair dados de saúde
-    console.log(`[${extractionId}] ===== FASE 1: SAÚDE =====`);
+    addLog(extractionId, "Iniciando coleta de dados de Saúde (CNES)...", "info");
     const estabelecimentosSaude = await extrairEstabelecimentosSaude(
       municipioCode,
       (current, total, message) => {
-        console.log(`[${extractionId}] CNES: ${message} (${current}/${total})`);
+        addLog(extractionId, `[${current}/${total}] ${message}`, "info");
       }
     );
-    console.log(`[${extractionId}] ✓ Saúde concluída: ${estabelecimentosSaude.length} estabelecimentos\n`);
+    addLog(extractionId, `Saúde concluída: ${estabelecimentosSaude.length} estabelecimentos`, "success");
 
     // 2. Extrair dados de educação
-    console.log(`[${extractionId}] ===== FASE 2: EDUCAÇÃO =====`);
+    addLog(extractionId, "Iniciando coleta de dados de Educação (INEP)...", "info");
     const estabelecimentosEducacao = await extrairEstabelecimentosEducacao(municipioCode);
-    console.log(`[${extractionId}] ✓ Educação concluída: ${estabelecimentosEducacao.length} estabelecimentos\n`);
+    addLog(extractionId, `Educação concluída: ${estabelecimentosEducacao.length} estabelecimentos`, "success");
 
     // 3. Extrair dados de assistência social
-    console.log(`[${extractionId}] ===== FASE 3: ASSISTÊNCIA SOCIAL =====`);
+    addLog(extractionId, "Iniciando coleta de dados de Assistência Social (SUAS)...", "info");
     const estabelecimentosAssistencia = await extrairEstabelecimentosAssistencia(municipioCode);
-    console.log(`[${extractionId}] ✓ Assistência concluída: ${estabelecimentosAssistencia.length} estabelecimentos\n`);
+    addLog(extractionId, `Assistência concluída: ${estabelecimentosAssistencia.length} estabelecimentos`, "success");
 
     // 4. Mapear para formato final
-    console.log(`[${extractionId}] ===== FASE 4: MAPEAMENTO =====`);
+    addLog(extractionId, "Mapeando dados para formato final...", "info");
     const estabelecimentosFinais: EstabelecimentoFinal[] = [];
 
     // Mapear saúde
@@ -239,15 +238,12 @@ async function processExtraction(
       });
     }
 
-    // 5. Geocodificação removida - aceitar apenas endereço
-    console.log(`[${extractionId}] Geocodificação desabilitada - mantendo apenas endereços`);
-
-    console.log(`[${extractionId}] Total de estabelecimentos mapeados: ${estabelecimentosFinais.length}\n`);
+    addLog(extractionId, `Total de estabelecimentos mapeados: ${estabelecimentosFinais.length}`, "info");
 
     // 6. Gerar arquivo XLSX
-    console.log(`[${extractionId}] ===== FASE 5: GERAÇÃO XLSX =====`);
+    addLog(extractionId, "Gerando arquivo XLSX...", "info");
     const { url, key } = await gerarArquivoXLSX(estabelecimentosFinais, municipioCode);
-    console.log(`[${extractionId}] ✓ Arquivo XLSX gerado com sucesso`);
+    addLog(extractionId, "Arquivo XLSX gerado com sucesso", "success");
 
     // 7. Atualizar registro
     await db
@@ -263,13 +259,12 @@ async function processExtraction(
       })
       .where(eq(extractions.id, extractionId));
 
-    console.log(`\n========================================`);
-    console.log(`[${extractionId}] ✓✓✓ EXTRAÇÃO CONCLUÍDA COM SUCESSO ✓✓✓`);
-    console.log(`[${extractionId}] Total: ${estabelecimentosSaude.length} saúde + ${estabelecimentosEducacao.length} educação + ${estabelecimentosAssistencia.length} assistência`);
-    console.log(`[${extractionId}] Arquivo disponível em: ${url}`);
-    console.log(`========================================\n`);
+    addLog(extractionId, `Extração concluída! Total: ${estabelecimentosSaude.length} saúde + ${estabelecimentosEducacao.length} educação + ${estabelecimentosAssistencia.length} assistência`, "success");
+    addLog(extractionId, `Arquivo disponível para download`, "success");
+    markCompleted(extractionId);
   } catch (error) {
-    console.error(`[${extractionId}] Erro na extração:`, error);
+    addLog(extractionId, `Erro na extração: ${error instanceof Error ? error.message : "Erro desconhecido"}`, "error");
+    markCompleted(extractionId);
 
     // Atualizar status como falha
     await db

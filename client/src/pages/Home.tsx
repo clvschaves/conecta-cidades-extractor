@@ -18,12 +18,36 @@ export default function Home() {
   const [logs, setLogs] = useState<string[]>([]);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
+  // Conectar ao SSE quando extração iniciar
+  useEffect(() => {
+    if (!extractionId) return;
+
+    const eventSource = new EventSource(`/api/extraction/${extractionId}/logs`);
+
+    eventSource.onmessage = (event) => {
+      const log = JSON.parse(event.data);
+      const timestamp = new Date(log.timestamp).toLocaleTimeString('pt-BR');
+      const icon = log.level === 'success' ? '✓' : log.level === 'error' ? '✗' : '→';
+      setLogs(prev => [...prev, `[${timestamp}] ${icon} ${log.message}`]);
+    };
+
+    eventSource.addEventListener('complete', () => {
+      eventSource.close();
+    });
+
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [extractionId]);
+
   const startExtractionMutation = trpc.extraction.startExtraction.useMutation({
     onSuccess: (data) => {
       setExtractionId(data.extractionId);
       setPhase("saude");
-      addLog(`✓ Extração iniciada com ID: ${data.extractionId}`);
-      addLog(`→ Iniciando coleta de dados de Saúde (CNES)...`);
       toast.success("Extração iniciada!");
     },
     onError: (error) => {

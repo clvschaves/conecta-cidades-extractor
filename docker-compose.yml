@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: conecta-cidades-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-conecta_cidades}
+      MYSQL_USER: ${MYSQL_USER:-conecta}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-conecta_password}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - conecta-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: conecta-cidades-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mysql://${MYSQL_USER:-conecta}:${MYSQL_PASSWORD:-conecta_password}@db:3306/${MYSQL_DATABASE:-conecta_cidades}
+      JWT_SECRET: ${JWT_SECRET:-change_this_secret_in_production}
+      VITE_APP_ID: ${VITE_APP_ID:-conecta-cidades}
+      VITE_APP_TITLE: ${VITE_APP_TITLE:-Conecta Cidades}
+      VITE_APP_LOGO: ${VITE_APP_LOGO:-}
+      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL:-https://api.manus.im}
+      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL:-https://portal.manus.im}
+      OWNER_OPEN_ID: ${OWNER_OPEN_ID:-}
+      OWNER_NAME: ${OWNER_NAME:-Admin}
+      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL:-}
+      BUILT_IN_FORGE_API_KEY: ${BUILT_IN_FORGE_API_KEY:-}
+      VITE_FRONTEND_FORGE_API_KEY: ${VITE_FRONTEND_FORGE_API_KEY:-}
+      VITE_FRONTEND_FORGE_API_URL: ${VITE_FRONTEND_FORGE_API_URL:-}
+      VITE_ANALYTICS_ENDPOINT: ${VITE_ANALYTICS_ENDPOINT:-}
+      VITE_ANALYTICS_WEBSITE_ID: ${VITE_ANALYTICS_WEBSITE_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - conecta-network
+    volumes:
+      - ./uploads:/app/uploads
+
+networks:
+  conecta-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

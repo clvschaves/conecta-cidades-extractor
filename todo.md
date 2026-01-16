@@ -121,3 +121,11 @@
 - [x] Adicionar porcentagem baseada em etapas concluídas (40% saúde, 70% educação, 90% assistência, 100% completo)
 - [ ] Mostrar estimativa de tempo restante
 - [x] Atualizar progresso durante cada fase (saúde, educação, assistência)
+
+## Preparação para Deploy
+- [ ] Criar Dockerfile para aplicação
+- [ ] Criar docker-compose.yml com app + banco MySQL
+- [ ] Gerar dump do banco de dados com todos os dados importados
+- [ ] Criar README.md completo com instruções de instalação
+- [ ] Criar .env.example com variáveis necessárias
+- [ ] Fazer push para GitHub

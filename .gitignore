@@ -109,3 +109,4 @@ temp/
 # Conecta Cidades - Arquivos específicos do projeto
 uploads/*.xlsx
 !uploads/.gitkeep
+database/init_clean.sql

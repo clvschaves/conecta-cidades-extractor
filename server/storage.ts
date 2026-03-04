@@ -1,18 +1,19 @@
 // Preconfigured storage helpers for Manus WebDev templates
 // Uses the Biz-provided storage proxy (Authorization: Bearer <token>)
+// Local fallback added for development without S3/Forge
 
 import { ENV } from './_core/env';
+import fs from 'fs';
+import path from 'path';
 
 type StorageConfig = { baseUrl: string; apiKey: string };
 
-function getStorageConfig(): StorageConfig {
+function getStorageConfig(): StorageConfig | null {
   const baseUrl = ENV.forgeApiUrl;
   const apiKey = ENV.forgeApiKey;
 
   if (!baseUrl || !apiKey) {
-    throw new Error(
-      "Storage proxy credentials missing: set BUILT_IN_FORGE_API_URL and BUILT_IN_FORGE_API_KEY"
-    );
+    return null; // Signals we should use local storage
   }
 
   return { baseUrl: baseUrl.replace(/\/+$/, ""), apiKey };
@@ -72,8 +73,33 @@ export async function storagePut(
   data: Buffer | Uint8Array | string,
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = getStorageConfig();
   const key = normalizeKey(relKey);
+
+  if (!config) {
+    // Local file system fallback
+    const uploadsDir = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    // Ensure nested directories exist
+    const dirName = path.dirname(key);
+    if (dirName && dirName !== '.') {
+      const fullDir = path.join(uploadsDir, dirName);
+      if (!fs.existsSync(fullDir)) {
+        fs.mkdirSync(fullDir, { recursive: true });
+      }
+    }
+
+    const filePath = path.join(uploadsDir, key);
+    fs.writeFileSync(filePath, data as any);
+
+    // Return a local URL path
+    return { key, url: `/uploads/${key}` };
+  }
+
+  const { baseUrl, apiKey } = config;
   const uploadUrl = buildUploadUrl(baseUrl, key);
   const formData = toFormData(data, contentType, key.split("/").pop() ?? key);
   const response = await fetch(uploadUrl, {
@@ -93,8 +119,17 @@ export async function storagePut(
 }
 
 export async function storageGet(relKey: string): Promise<{ key: string; url: string; }> {
-  const { baseUrl, apiKey } = getStorageConfig();
+  const config = getStorageConfig();
   const key = normalizeKey(relKey);
+
+  if (!config) {
+    return {
+      key,
+      url: `/uploads/${key}`
+    };
+  }
+
+  const { baseUrl, apiKey } = config;
   return {
     key,
     url: await buildDownloadUrl(baseUrl, key, apiKey),

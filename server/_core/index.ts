@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import path from "path";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -39,6 +40,9 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Upload route
   app.use("/api", uploadRouter);
+  // Servir arquivos de uploads locais
+  const uploadsDir = path.join(process.cwd(), "uploads");
+  app.use("/uploads", express.static(uploadsDir));
   // SSE route for real-time logs
   app.get("/api/extraction/:extractionId/logs", sseLogsHandler);
   // tRPC API

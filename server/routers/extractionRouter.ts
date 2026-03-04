@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { publicProcedure, router } from "../_core/trpc";
 import { extrairEstabelecimentosSaude } from "../services/cnesService";
 import { extrairEstabelecimentosEducacao } from "../services/inepService";
 import { extrairEstabelecimentosAssistencia } from "../services/suasService";
@@ -21,7 +21,7 @@ export const extractionRouter = router({
   /**
    * Validar código IBGE do município
    */
-  validateMunicipio: protectedProcedure
+  validateMunicipio: publicProcedure
     .input(
       z.object({
         codigo: z.string().min(6).max(7),
@@ -47,7 +47,7 @@ export const extractionRouter = router({
   /**
    * Iniciar extração de dados
    */
-  startExtraction: protectedProcedure
+  startExtraction: publicProcedure
     .input(
       z.object({
         municipioCode: z.string(),
@@ -55,7 +55,8 @@ export const extractionRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const { municipioCode } = input;
-      const userId = ctx.user.id;
+      // Para uso local sem auth
+      const userId = ctx?.user?.id || 1;
 
       try {
         const db = await getDb();
@@ -90,7 +91,7 @@ export const extractionRouter = router({
   /**
    * Obter status da extração
    */
-  getExtractionStatus: protectedProcedure
+  getExtractionStatus: publicProcedure
     .input(
       z.object({
         extractionId: z.number(),
@@ -118,16 +119,19 @@ export const extractionRouter = router({
   /**
    * Listar extrações do usuário
    */
-  listExtractions: protectedProcedure.query(async ({ ctx }) => {
+  listExtractions: publicProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) {
       return [];
     }
 
+    // Para uso local sem auth
+    const userId = ctx?.user?.id || 1;
+
     const results = await db
       .select()
       .from(extractions)
-      .where(eq(extractions.userId, ctx.user.id))
+      .where(eq(extractions.userId, userId))
       .orderBy(desc(extractions.createdAt))
       .limit(20);
 

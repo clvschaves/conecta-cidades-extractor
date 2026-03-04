@@ -1,6 +1,6 @@
 import { z } from "zod";
 import * as XLSX from "xlsx";
-import { protectedProcedure, router } from "../_core/trpc";
+import { publicProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { escolas, equipamentosAssistencia } from "../../drizzle/schema";
 
@@ -8,7 +8,7 @@ export const importRouter = router({
   /**
    * Importar planilha de educação (INEP)
    */
-  importEducacao: protectedProcedure
+  importEducacao: publicProcedure
     .input(
       z.object({
         fileUrl: z.string().url(), // URL do arquivo já upado no S3
@@ -19,7 +19,7 @@ export const importRouter = router({
       if (!db) throw new Error("Banco de dados não disponível");
 
       console.log("[IMPORT] Baixando planilha de educação...");
-      
+
       // Baixar arquivo
       const response = await fetch(input.fileUrl);
       const buffer = await response.arrayBuffer();
@@ -41,7 +41,7 @@ export const importRouter = router({
 
       for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
-        
+
         const values = batch
           .filter((row) => row["Código INEP"] && row["Escola"] && row["Município"])
           .map((row) => ({
@@ -73,7 +73,7 @@ export const importRouter = router({
   /**
    * Importar planilha de assistência social (SUAS)
    */
-  importAssistencia: protectedProcedure
+  importAssistencia: publicProcedure
     .input(
       z.object({
         fileUrl: z.string().url(),
@@ -84,7 +84,7 @@ export const importRouter = router({
       if (!db) throw new Error("Banco de dados não disponível");
 
       console.log("[IMPORT] Baixando planilha de assistência...");
-      
+
       // Baixar arquivo
       const response = await fetch(input.fileUrl);
       const buffer = await response.arrayBuffer();
@@ -106,7 +106,7 @@ export const importRouter = router({
 
       for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
-        
+
         const values = batch
           .filter((row) => row["Município"] && row["Nome"] && row["IBGE"] && row["UF"])
           .map((row) => ({
@@ -142,7 +142,7 @@ export const importRouter = router({
   /**
    * Obter estatísticas dos dados importados
    */
-  getStats: protectedProcedure.query(async () => {
+  getStats: publicProcedure.query(async () => {
     const db = await getDb();
     if (!db) throw new Error("Banco de dados não disponível");
 

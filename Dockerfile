@@ -3,8 +3,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and patches
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 
 # Install pnpm and dependencies
 RUN npm install -g pnpm@10.4.1
@@ -24,15 +25,15 @@ WORKDIR /app
 # Install pnpm
 RUN npm install -g pnpm@10.4.1
 
-# Copy package files
+# Copy package files and patches
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/uploads ./uploads
 

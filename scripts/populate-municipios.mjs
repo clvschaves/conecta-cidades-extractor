@@ -32,7 +32,7 @@ async function main() {
 
     for (let i = 0; i < municipiosData.length; i += batchSize) {
       const batch = municipiosData.slice(i, i + batchSize);
-      
+
       const values = batch
         .filter((m) => m.microrregiao?.mesorregiao?.UF?.sigla) // Filtrar dados incompletos
         .map((m) => ({
@@ -51,6 +51,7 @@ async function main() {
 
     console.log(`\n🎉 Tabela de municípios populada com sucesso!`);
     console.log(`📊 Total: ${inserted} municípios`);
+    process.exit(0);
   } catch (error) {
     console.error("❌ Erro ao popular tabela:", error.message);
     process.exit(1);

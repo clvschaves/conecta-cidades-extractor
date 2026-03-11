@@ -1,6 +1,11 @@
 import XLSX from "xlsx";
 import { drizzle } from "drizzle-orm/mysql2";
 import { equipamentosAssistencia } from "../drizzle/schema.js";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -16,9 +21,10 @@ async function main() {
 
   try {
     // Ler planilha
-    console.log("📖 Lendo planilha ConsolidadoPlanilhas.xlsx...");
-    const workbook = XLSX.readFile("/home/ubuntu/conecta-cidades-extractor/uploads/ConsolidadoPlanilhas.xlsx");
-    
+    const filePath = join(__dirname, "../uploads/ConsolidadoPlanilhas.xlsx");
+    console.log(`📖 Lendo planilha ${filePath}...`);
+    const workbook = XLSX.readFile(filePath);
+
     // Limpar tabela
     console.log("🗑️  Limpando tabela existente...");
     await db.delete(equipamentosAssistencia);
@@ -34,7 +40,7 @@ async function main() {
 
     for (const aba of abas) {
       console.log(`\n📊 Processando aba: ${aba.nome}...`);
-      
+
       if (!workbook.SheetNames.includes(aba.nome)) {
         console.log(`⚠️  Aba "${aba.nome}" não encontrada, pulando...`);
         continue;
@@ -51,9 +57,9 @@ async function main() {
 
       for (let i = 0; i < data.length; i += batchSize) {
         const batch = data.slice(i, i + batchSize);
-        
+
         const values = batch
-          .filter((row) => row["Município"] && row["Nome"] && row["IBGE"])
+          .filter((row) => (row["Município"] || row["q0_9"]) && (row["Nome"] || row["q0_1"]) && row["IBGE"])
           .map((row) => {
             // Normalizar código IBGE para 6 dígitos
             const ibge = String(row["IBGE"] || "").trim();
@@ -65,25 +71,37 @@ async function main() {
               tipo = String(row["Tipo"]).toUpperCase();
             }
 
+            const nome = String(row["Nome"] || row["q0_1"] || "");
+            const enderecoBase = row["Endereço Tratado"] ? String(row["Endereço Tratado"]) : null;
+            const enderecoAlt = row["q0_2"] && row["q0_3"] && row["q0_4"]
+              ? `${row["q0_2"]} ${row["q0_3"]}, ${row["q0_4"]}`.trim()
+              : null;
+            const endereco = enderecoBase || enderecoAlt;
+
+            const uf = String(row["UF"] || row["Nome_UF"] || row["q0_10"] || "");
+            const bairro = row["Bairro da Cruz"] || row["Bairro"] || row["q0_6"] ? String(row["Bairro da Cruz"] || row["Bairro"] || row["q0_6"]) : null;
+
             return {
               codigoMunicipio,
-              municipio: String(row["Município"] || row["Município2"] || ""),
-              uf: String(row["UF"] || ""),
+              municipio: String(row["Município"] || row["Município2"] || row["q0_9"] || ""),
+              uf,
               tipo,
-              nome: String(row["Nome"]),
-              endereco: row["Endereço Tratado"] ? String(row["Endereço Tratado"]) : null,
+              nome,
+              endereco,
               latitude: (() => {
-                const val = row["latitude"] ? parseFloat(String(row["latitude"]).replace(",", ".")) : null;
-                return (val && val >= -90 && val <= 90) ? val : null;
+                const lat = row["latitude"] || row["Latitude"];
+                const val = lat ? parseFloat(String(lat).replace(",", ".")) : null;
+                return (val && val >= -90 && val <= 90) ? String(val) : null;
               })(),
               longitude: (() => {
-                const val = row["longitude"] ? parseFloat(String(row["longitude"]).replace(",", ".")) : null;
-                return (val && val >= -180 && val <= 180) ? val : null;
+                const lng = row["longitude"] || row["Longitude"];
+                const val = lng ? parseFloat(String(lng).replace(",", ".")) : null;
+                return (val && val >= -180 && val <= 180) ? String(val) : null;
               })(),
-              telefone: row["Telefone"] ? String(row["Telefone"]) : null,
-              email: row["E-mail"] ? String(row["E-mail"]) : null,
-              cep: row["CEP"] ? String(row["CEP"]) : null,
-              bairro: row["Bairro da Cruz"] || row["Bairro"] ? String(row["Bairro da Cruz"] || row["Bairro"]) : null,
+              telefone: row["Telefone"] || row["q0_12"] ? String(row["Telefone"] || row["q0_12"]) : null,
+              email: row["E-mail"] || row["q0_11"] ? String(row["E-mail"] || row["q0_11"]) : null,
+              cep: row["CEP"] || row["q0_8"] ? String(row["CEP"] || row["q0_8"]) : null,
+              bairro,
             };
           });
 
@@ -100,6 +118,7 @@ async function main() {
 
     console.log(`\n🎉 Importação concluída com sucesso!`);
     console.log(`📊 Total geral: ${totalInserido} equipamentos importados`);
+    process.exit(0);
   } catch (error) {
     console.error("❌ Erro ao importar dados:", error.message);
     console.error(error);

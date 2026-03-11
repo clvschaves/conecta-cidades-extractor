@@ -39,7 +39,7 @@ function mapearHorario(horarios: any[]): {
     const fim = item.hrFimAtendimento;
 
     if (inicio && fim) {
-      const horarioFmt = `${inicio}-${fim}`;
+      const horarioFmt = `${inicio} - ${fim}`;
 
       if (dia.includes("Domingo")) resultado.domingo = horarioFmt;
       else if (dia.includes("Segunda")) resultado.segunda = horarioFmt;
@@ -72,10 +72,10 @@ export async function extrairEstabelecimentosSaude(
     logFrontend(`========================================\n`);
 
     // Normalizar código: API CNES aceita apenas 6 dígitos (sem dígito verificador)
-    const codigoNormalizado = codigoMunicipio.length === 7 
-      ? codigoMunicipio.substring(0, 6) 
+    const codigoNormalizado = codigoMunicipio.length === 7
+      ? codigoMunicipio.substring(0, 6)
       : codigoMunicipio;
-    
+
     logFrontend(`📝 Código original: ${codigoMunicipio}`);
     logFrontend(`📝 Código normalizado: ${codigoNormalizado}`);
 
@@ -84,7 +84,7 @@ export async function extrairEstabelecimentosSaude(
     logFrontend(`\n🌐 Fazendo requisição HTTP GET...`);
     logFrontend(`URL: ${listaUrl}`);
     logFrontend(`Timeout: 15 segundos`);
-    
+
     const inicioReq = Date.now();
     let listaResponse;
     try {
@@ -99,7 +99,7 @@ export async function extrairEstabelecimentosSaude(
       if (error.code) logFrontend(`Código: ${error.code}`);
       throw error;
     }
-    
+
     const listaBasica = listaResponse.data;
 
     if (!Array.isArray(listaBasica)) {
@@ -119,7 +119,7 @@ export async function extrairEstabelecimentosSaude(
     logFrontend(`\n🔍 Aplicando filtros...`);
     logFrontend(`Filtro 1: gestao === "M" (gestão municipal)`);
     logFrontend(`Filtro 2: natJuridica !== "2*" (excluir privados)`);
-    
+
     const estabelecimentosFiltrados = listaBasica.filter((item: any) => {
       const gestao = item.gestao;
       const natJuridica = String(item.natJuridica || "");
@@ -128,7 +128,7 @@ export async function extrairEstabelecimentosSaude(
 
     const total = estabelecimentosFiltrados.length;
     logFrontend(`✅ Após filtros: ${total} estabelecimentos municipais`);
-    
+
     if (total === 0) {
       logFrontend(`⚠️ Nenhum estabelecimento municipal encontrado`);
       return [];
@@ -139,6 +139,18 @@ export async function extrairEstabelecimentosSaude(
     const estabelecimentos: EstabelecimentoSaude[] = [];
     let sucessos = 0;
     let falhas = 0;
+
+    let cidadeUf = "";
+    try {
+      // tentar pegar da propria api dados do municipio e UF
+      const municipioResponse = await axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/municipios/${codigoMunicipio}`, { timeout: 5000 });
+      const ibgeData = municipioResponse.data;
+      if (ibgeData && ibgeData.nome && ibgeData.microrregiao?.mesorregiao?.UF?.sigla) {
+        cidadeUf = ` - ${ibgeData.nome}/${ibgeData.microrregiao.mesorregiao.UF.sigla}`;
+      }
+    } catch (e) {
+      // ignore
+    }
 
     // 2. Buscar detalhes de cada estabelecimento
     for (let i = 0; i < estabelecimentosFiltrados.length; i++) {
@@ -154,12 +166,12 @@ export async function extrairEstabelecimentosSaude(
         // Buscar detalhes
         const detalhesUrl = `${CNES_BASE_URL}/${idCnes}`;
         logFrontend(`  → GET ${detalhesUrl}`);
-        
+
         const inicioDetalhes = Date.now();
         const detalhesResponse = await axios.get(detalhesUrl, { headers, timeout: 10000 });
         const tempoDetalhes = Date.now() - inicioDetalhes;
         logFrontend(`  ✓ Detalhes recebidos em ${tempoDetalhes}ms`);
-        
+
         const detalhes = detalhesResponse.data;
 
         // Buscar horários
@@ -182,7 +194,8 @@ export async function extrairEstabelecimentosSaude(
         const bairro = formatarTexto(detalhes.bairro);
         const complemento = formatarTexto(detalhes.noComplemento);
         const complementoStr = complemento ? `, ${complemento}` : "";
-        const endereco = `${logradouro}, ${numero}${complementoStr} - ${bairro}`;
+
+        const endereco = `${logradouro}, ${numero}${complementoStr} - ${bairro}${cidadeUf}`;
 
         const estabelecimento: EstabelecimentoSaude = {
           cnes: cnesCode,

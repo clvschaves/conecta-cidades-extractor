@@ -18,6 +18,7 @@ export async function gerarArquivoXLSX(
     // Definir colunas
     worksheet.columns = [
       { header: "Secretaria / Órgão", key: "secretaria", width: 40 },
+      { header: "Classificação", key: "classificacaoOriginal", width: 40 },
       { header: "Categoria/Subcategoria", key: "categoria", width: 50 },
       { header: "Nome", key: "nome", width: 60 },
       { header: "Endereço", key: "endereco", width: 60 },
@@ -37,6 +38,7 @@ export async function gerarArquivoXLSX(
     estabelecimentos.forEach((est) => {
       worksheet.addRow({
         secretaria: est.secretaria,
+        classificacaoOriginal: est.classificacaoOriginal,
         categoria: est.categoria,
         nome: est.nome,
         endereco: est.endereco,

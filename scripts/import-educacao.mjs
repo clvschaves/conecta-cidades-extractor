@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/mysql2";
-import { escolas } from "../drizzle/schema";
+import { escolas } from "../drizzle/schema.js";
 import XLSX from "xlsx";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";

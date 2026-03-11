@@ -35,6 +35,7 @@ export type EstabelecimentoAssistencia = EstabelecimentoBase & {
 export type EstabelecimentoFinal = {
   secretaria: string;
   categoria: string;
+  classificacaoOriginal: string;
   nome: string;
   endereco: string;
   latitude: string;
@@ -64,7 +65,7 @@ export type ProgressUpdate = {
 };
 
 export const CATEGORIA_MAP: Record<string, string> = {
-  // Saúde
+  // Saúde - Mapeamentos Específicos e "ok"
   "CENTRO DE SAUDE/UNIDADE BASICA": "Saúde/Centro de Saúde e Unidade Básica",
   "UNIDADE BASICA DE SAUDE": "Saúde/Centro de Saúde e Unidade Básica",
   "POSTO DE SAUDE": "Saúde/Centro de Saúde e Unidade Básica",
@@ -82,13 +83,31 @@ export const CATEGORIA_MAP: Record<string, string> = {
   "PRONTO ATENDIMENTO": "Saúde/Pronto Atendimento",
   "UPA": "Saúde/Pronto Atendimento",
   "PRONTO SOCORRO": "Saúde/Pronto Atendimento",
-  
+  "CENTRAL DE GESTAO EM SAUDE": "Saúde/Gestão e Regulação",
+  "CENTRAL DE REGULACAO DO ACESSO": "Saúde/Gestão e Regulação",
+  "CENTRAL DE REGULACAO MEDICA DAS URGENCIAS": "Saúde/Gestão e Regulação",
+  "FARMACIA": "Saúde/Assistência Farmacêutica",
+  "POLO DE PREVENCAO DE DOENCAS E AGRAVOS E PROMOCAO DA SAUDE": "Saúde/Casa de Apoio",
+  "UNIDADE DE APOIO DIAGNOSE E TERAPIA (SADT ISOLADO)": "Saúde/Clínica e Centro de Especialidade",
+  "UNIDADE DE ATENCAO A SAUDE INDIGENA": "Saúde/Saúde Indígena",
+  "UNIDADE DE VIGILANCIA EM SAUDE": "Saúde/Vigilância em Saúde",
+  "UNIDADE MOVEL DE NIVEL PRE-HOSPITALAR NA AREA DE URGENCIA": "Saúde/Urgência e Emergência Móvel",
+  "LABORATORIO DE SAUDE PUBLICA": "Saúde/Laboratório de Saúde Pública",
+  "LABORATORIO CENTRAL DE SAUDE PUBLICA LACEN": "Saúde/Laboratório de Saúde Pública",
+  "CLINICA/CENTRO DE ESPECIALIDADE": "Saúde/Clínica e Centro de Especialidade",
+
+  // Saúde - Exclusões
+  "CENTRAL DE ABASTECIMENTO": "REMOVER",
+  "CONSULTORIO ISOLADO": "REMOVER",
+  "UNIDADE MOVEL FLUVIAL": "REMOVER",
+  "UNIDADE MOVEL TERRESTRE": "REMOVER",
+
   // Educação
   "CRECHE": "Educação/Creches Municipais",
   "ESCOLA": "Educação/Escolas Municipais",
   "BIBLIOTECA": "Educação/Bibliotecas",
   "ANEXO": "Educação/Anexos",
-  
+
   // Assistência Social
   "CRAS": "Cidadania/CRAS (Centro Regional de Assistência Social)",
   "CREAS": "Cidadania/CREAS (Centro Regional especialistado de Assistência Social)",

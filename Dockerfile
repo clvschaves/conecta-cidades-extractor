@@ -44,4 +44,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start application
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/index.prod.js"]

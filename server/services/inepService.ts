@@ -56,7 +56,7 @@ export async function extrairEstabelecimentosEducacao(
 
     for (let i = 0; i < escolasResult.length; i++) {
       const escola = escolasResult[i];
-      
+
       if (i < 5) {
         console.log(`[INEP] ${i + 1} - ${escola.nome.substring(0, 50)}`);
       }
@@ -64,8 +64,8 @@ export async function extrairEstabelecimentosEducacao(
       estabelecimentos.push({
         codigoInep: escola.codigoInep,
         nome: escola.nome,
-        tipo: "ESCOLA",
-        endereco: escola.endereco || `${escola.municipio}/${escola.uf}`,
+        tipo: escola.nome.toUpperCase().includes("CRECHE") || escola.nome.toUpperCase().includes("C M E I") || escola.nome.toUpperCase().includes("CENTRO MUNICIPAL DE EDUCACAO INFANTIL") ? "CRECHE" : "ESCOLA",
+        endereco: (escola.endereco && escola.endereco !== "S/N" ? escola.endereco : "S/N") + ` - ${municipioNome}/${municipioResult[0].uf}`,
         latitude: escola.latitude ? parseFloat(escola.latitude) : undefined,
         longitude: escola.longitude ? parseFloat(escola.longitude) : undefined,
       });

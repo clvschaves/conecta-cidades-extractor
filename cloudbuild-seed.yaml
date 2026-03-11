@@ -1,0 +1,15 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        apt-get update && apt-get install -y npm
+        npm install -g pnpm@10.4.1
+        curl -o cloud-sql-proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.14.3/cloud-sql-proxy.linux.amd64 && chmod +x cloud-sql-proxy
+        ./cloud-sql-proxy universal-team-401112:us-central1:conecta-cidades-db > proxy.log 2>&1 &
+        sleep 5
+        pnpm install
+        DATABASE_URL="mysql://root:conecta_cloud_password@localhost:3306/conecta_cidades" npx tsx scripts/populate-municipios.mjs
+        DATABASE_URL="mysql://root:conecta_cloud_password@localhost:3306/conecta_cidades" npx tsx scripts/import-assistencia.mjs
+        DATABASE_URL="mysql://root:conecta_cloud_password@localhost:3306/conecta_cidades" npx tsx scripts/import-educacao.mjs

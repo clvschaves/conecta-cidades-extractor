@@ -13,7 +13,7 @@ import {
 import { gerarArquivoXLSX } from "../services/xlsxService";
 import { EstabelecimentoFinal } from "../../shared/estabelecimentos";
 import { getDb } from "../db";
-import { extractions } from "../../drizzle/schema";
+import { extractions, municipios } from "../../drizzle/schema";
 import { eq, desc } from "drizzle-orm";
 import { addLog, markCompleted } from "../services/logManager";
 
@@ -152,6 +152,21 @@ async function processExtraction(
     throw new Error("Database não disponível");
   }
 
+  let municipioLocalNome = "";
+  try {
+    const municipioResult = await db
+      .select({ nome: municipios.nome, uf: municipios.uf })
+      .from(municipios)
+      .where(eq(municipios.codigoIbge, municipioCode.substring(0, 6)))
+      .limit(1);
+
+    if (municipioResult.length > 0) {
+      municipioLocalNome = `${municipioResult[0].nome} - ${municipioResult[0].uf}`;
+    }
+  } catch (err) {
+    console.warn("Erro ao buscar nome do município localmente:", err);
+  }
+
   try {
     addLog(extractionId, `Iniciando extração para município ${municipioCode}`, "info");
 
@@ -182,8 +197,11 @@ async function processExtraction(
     // Mapear saúde
     for (const est of estabelecimentosSaude) {
       const categoria = mapearCategoriaSaude(est.tipo);
+      if (categoria === "REMOVER") continue;
+
       estabelecimentosFinais.push({
         secretaria: obterSecretaria(categoria),
+        classificacaoOriginal: est.tipo || "",
         categoria,
         nome: est.nome,
         endereco: est.endereco,
@@ -205,6 +223,7 @@ async function processExtraction(
       const categoria = mapearCategoriaEducacao(est.tipo);
       estabelecimentosFinais.push({
         secretaria: obterSecretaria(categoria),
+        classificacaoOriginal: est.tipo || "",
         categoria,
         nome: est.nome,
         endereco: est.endereco,
@@ -226,6 +245,7 @@ async function processExtraction(
       const categoria = mapearCategoriaAssistencia(est.tipo);
       estabelecimentosFinais.push({
         secretaria: obterSecretaria(categoria),
+        classificacaoOriginal: est.tipo || "",
         categoria,
         nome: est.nome,
         endereco: est.endereco,

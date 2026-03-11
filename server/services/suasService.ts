@@ -31,7 +31,7 @@ export async function extrairEstabelecimentosAssistencia(
     const municipioResult = await db
       .select()
       .from(municipios)
-      .where(eq(municipios.codigoIbge, codigoMunicipio))
+      .where(eq(municipios.codigoIbge, codigoMunicipio.substring(0, 6)))
       .limit(1);
 
     if (municipioResult.length === 0) {
@@ -46,17 +46,22 @@ export async function extrairEstabelecimentosAssistencia(
     console.log(`[SUAS] ✅ Município encontrado: ${nomeMunicipio}/${municipio.uf}`);
 
     // 2. Buscar equipamentos do município
-    console.log(`[SUAS] Consultando equipamentos no banco de dados...`);
+    console.log(`[SUAS] Consultando equipamentos no banco de dados para código ${codigoMunicipio.substring(0, 6)}...`);
 
     const equipamentosResult = await db
       .select()
-      .from(equipamentosAssistencia);
+      .from(equipamentosAssistencia)
+      .where(eq(equipamentosAssistencia.codigoMunicipio, codigoMunicipio.substring(0, 6)));
 
-    // Filtrar por município (normalizado)
-    const equipamentosFiltrados = equipamentosResult.filter((eq) => {
-      const municipioEq = normalizarTexto(eq.municipio);
-      return municipioEq === nomeMunicipioNormalizado;
-    });
+    // Se IBGE falhar, tenta por nome (fallback)
+    let equipamentosFiltrados = equipamentosResult;
+    if (equipamentosFiltrados.length === 0) {
+      console.log(`[SUAS] ⚠️ IBGE não encontrou resultados, tentando por nome normalizado...`);
+      const allEquipamentos = await db.select().from(equipamentosAssistencia);
+      equipamentosFiltrados = allEquipamentos.filter((eq) => {
+        return normalizarTexto(eq.municipio) === nomeMunicipioNormalizado;
+      });
+    }
 
     console.log(`[SUAS] Total de equipamentos encontrados: ${equipamentosFiltrados.length}`);
 
@@ -69,7 +74,7 @@ export async function extrairEstabelecimentosAssistencia(
 
     for (let i = 0; i < equipamentosFiltrados.length; i++) {
       const equip = equipamentosFiltrados[i];
-      
+
       if (i < 5) {
         console.log(`[SUAS] ${i + 1} - ${equip.tipo} - ${equip.nome.substring(0, 40)}`);
       }
@@ -77,7 +82,7 @@ export async function extrairEstabelecimentosAssistencia(
       estabelecimentos.push({
         tipo: equip.tipo as "CRAS" | "CREAS",
         nome: equip.nome,
-        endereco: equip.endereco || `${municipio.nome}/${municipio.uf}`,
+        endereco: (equip.endereco && equip.endereco !== "S/N" ? equip.endereco : "S/N") + ` - ${municipio.nome}/${municipio.uf}`,
         latitude: equip.latitude ? parseFloat(equip.latitude) : undefined,
         longitude: equip.longitude ? parseFloat(equip.longitude) : undefined,
       });

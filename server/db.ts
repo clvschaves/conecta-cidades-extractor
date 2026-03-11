@@ -3,13 +3,29 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
+import mysql from 'mysql2/promise';
+
 let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const url = new URL(process.env.DATABASE_URL);
+      const socket = url.searchParams.get("socket") || url.searchParams.get("socketPath");
+
+      if (socket) {
+        console.log("Configured MySQL connection to use Unix Socket at:", socket);
+        const pool = mysql.createPool({
+          user: url.username,
+          password: decodeURIComponent(url.password),
+          database: url.pathname.slice(1),
+          socketPath: socket
+        });
+        _db = drizzle(pool as any);
+      } else {
+        _db = drizzle(process.env.DATABASE_URL);
+      }
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
